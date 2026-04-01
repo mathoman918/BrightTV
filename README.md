@@ -1,6 +1,6 @@
 # BrightTV
 
-## BrightTV Viewership Analytics – Case Study
+## BrightTV Viewership Analytics
 
 ### Project Overview
 
@@ -8,7 +8,7 @@ This project analyses BrightTV user profiles and viewership transaction data to 
 
 The project includes data cleaning, SQL analysis, Excel dashboards, and a final presentation summarising insights and recommendations.
 
-## How the Case Study Was Done
+## How the project Was Done
 
 The project was completed in the following phases:
 
@@ -62,7 +62,7 @@ To grow BrightTV’s user base and consumption:
 
 ## Tools Used
 
-The following tools were used to complete this case study:
+The following tools were used to complete this project:
 
 * SQL (Data cleaning and analysis)
 * Excel (Pivot tables, charts, dashboard)
