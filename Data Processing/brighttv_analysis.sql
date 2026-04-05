@@ -1,164 +1,114 @@
-{
- "cells": [
-  {
-   "cell_type": "code",
-   "execution_count": 0,
-   "metadata": {
-    "application/vnd.databricks.v1+cell": {
-     "cellMetadata": {
-      "byteLimit": 26214400,
-      "rowLimit": 100000
-     },
-     "inputWidgets": {},
-     "nuid": "0cdd79e8-56fb-49f9-b8dd-053696e4158a",
-     "showTitle": false,
-     "tableResultSettingsMap": {},
-     "title": ""
-    }
-   },
-   "outputs": [],
-   "source": [
-    "--- DATA EXPLORATION\n",
-    "-- Preview the tables\n",
-    "SELECT *\n",
-    "FROM workspace.default.Viewership\n",
-    "LIMIT 10;\n",
-    "\n",
-    "SELECT *\n",
-    "FROM workspace.default.user_profiles\n",
-    "LIMIT 10;\n",
-    "\n",
-    "SELECT *\n",
-    "FROM workspace.default.viewership AS A\n",
-    "LEFT JOIN workspace.default.user_profiles AS B\n",
-    "ON A.UserID0 = B.UserID\n",
-    "LIMIT 10;\n",
-    "\n",
-    "--- Data Cleaning\n",
-    "--------------------------------------------------------------------------------------\n",
-    "CREATE OR REPLACE TABLE workspace.default.brighttv_clean AS\n",
-    "SELECT\n",
-    "    A.UserID0 AS UserID,\n",
-    "    A.Channel2 AS Channel,\n",
-    "    \n",
-    "    A.RecordDate2 + INTERVAL 2 HOURS AS RecordDate_SA,\n",
-    "    \n",
-    "    A.`Duration 2` AS Duration,\n",
-    "    \n",
-    "    -- Convert duration to minutes\n",
-    "    (HOUR(A.`Duration 2`) * 60) + MINUTE(A.`Duration 2`) AS Duration_Minutes,\n",
-    "    \n",
-    "    B.Name,\n",
-    "    B.Surname,\n",
-    "    B.Email,\n",
-    "    B.Gender,\n",
-    "    B.Race,\n",
-    "    B.Age,\n",
-    "    B.Province,\n",
-    "    \n",
-    "    YEAR(A.RecordDate2 + INTERVAL 2 HOURS) AS year,\n",
-    "    MONTH(A.RecordDate2 + INTERVAL 2 HOURS) AS month,\n",
-    "    DAY(A.RecordDate2 + INTERVAL 2 HOURS) AS day,\n",
-    "    \n",
-    "    DATE_FORMAT(A.RecordDate2 + INTERVAL 2 HOURS, 'MMMM') AS month_name,\n",
-    "    DATE_FORMAT(A.RecordDate2 + INTERVAL 2 HOURS, 'EEEE') AS day_name,\n",
-    "    \n",
-    "    HOUR(A.RecordDate2 + INTERVAL 2 HOURS) AS hour\n",
-    "FROM workspace.default.viewership AS A\n",
-    "LEFT JOIN workspace.default.user_profiles AS B\n",
-    "ON A.UserID0 = B.UserID;\n",
-    "--------------------------------------------------------------------------------------\n",
-    "--------------------------------------------------------------------------------------\n",
-    "\n",
-    "--- Total Consumption\n",
-    "SELECT\n",
-    "    COUNT(*) AS total_sessions\n",
-    "FROM workspace.default.brighttv_clean;\n",
-    "\n",
-    "--- Consumption by Day\n",
-    "SELECT\n",
-    "    day_name,\n",
-    "    COUNT(*) AS total_views\n",
-    "FROM workspace.default.brighttv_clean\n",
-    "GROUP BY day_name\n",
-    "ORDER BY total_views DESC;\n",
-    "\n",
-    "--- Consumption by Hour\n",
-    "SELECT\n",
-    "    hour,\n",
-    "    COUNT(*) AS total_views\n",
-    "FROM workspace.default.brighttv_clean\n",
-    "GROUP BY hour\n",
-    "ORDER BY hour;\n",
-    "\n",
-    "--- Most Watched Channels\n",
-    "SELECT\n",
-    "    Channel,\n",
-    "    COUNT(*) AS total_views\n",
-    "FROM workspace.default.brighttv_clean\n",
-    "GROUP BY Channel\n",
-    "ORDER BY total_views DESC;\n",
-    "\n",
-    "--- Consumption by Province\n",
-    "SELECT\n",
-    "    Province,\n",
-    "    COUNT(*) AS total_views\n",
-    "FROM workspace.default.brighttv_clean\n",
-    "GROUP BY Province\n",
-    "ORDER BY total_views DESC;\n",
-    "\n",
-    "--- Consumption by Gender\n",
-    "SELECT\n",
-    "    Gender,\n",
-    "    COUNT(*) AS total_views\n",
-    "FROM workspace.default.brighttv_clean\n",
-    "GROUP BY Gender;\n",
-    "\n",
-    "--- Consumption by Age\n",
-    "SELECT\n",
-    "    Age,\n",
-    "    COUNT(*) AS total_views\n",
-    "FROM workspace.default.brighttv_clean\n",
-    "GROUP BY Age\n",
-    "ORDER BY Age;\n",
-    "\n",
-    "--- Low Consumption Days\n",
-    "SELECT\n",
-    "    day_name,\n",
-    "    COUNT(*) AS total_views\n",
-    "FROM workspace.default.brighttv_clean\n",
-    "GROUP BY day_name\n",
-    "ORDER BY total_views ASC;\n",
-    "\n",
-    "SELECT *\n",
-    "FROM workspace.default.brighttv_clean;\n",
-    "\n",
-    "\n"
-   ]
-  }
- ],
- "metadata": {
-  "application/vnd.databricks.v1+notebook": {
-   "computePreferences": null,
-   "dashboards": [],
-   "environmentMetadata": null,
-   "inputWidgetPreferences": null,
-   "language": "sql",
-   "notebookMetadata": {
-    "pythonIndentUnit": 4,
-    "sqlQueryOptions": {
-     "applyAutoLimit": false,
-     "catalog": "workspace",
-     "schema": "default"
-    }
-   },
-   "notebookName": "brighttv_analysis.sql.dbquery.ipynb",
-   "widgets": {}
-  },
-  "language_info": {
-   "name": "sql"
-  }
- },
- "nbformat": 4,
- "nbformat_minor": 0
-}
+--- DATA EXPLORATION
+--- Preview the tables
+SELECT *
+FROM workspace.default.Viewership
+LIMIT 10;
+
+SELECT *
+FROM workspace.default.user_profiles
+LIMIT 10;
+
+SELECT *
+FROM workspace.default.viewership AS A
+LEFT JOIN workspace.default.user_profiles AS B
+ON A.UserID0 = B.UserID
+LIMIT 10;
+
+--- Data Cleaning
+--------------------------------------------------------------------------------------
+CREATE OR REPLACE TABLE workspace.default.brighttv_clean AS
+SELECT
+    A.UserID0 AS UserID,
+    A.Channel2 AS Channel,
+    
+    A.RecordDate2 + INTERVAL 2 HOURS AS RecordDate_SA,
+    
+    A.`Duration 2` AS Duration,
+    
+    -- Convert duration to minutes
+    (HOUR(A.`Duration 2`) * 60) + MINUTE(A.`Duration 2`) AS Duration_Minutes,
+    
+    B.Name,
+    B.Surname,
+    B.Email,
+    B.Gender,
+    B.Race,
+    B.Age,
+    B.Province,
+    
+    YEAR(A.RecordDate2 + INTERVAL 2 HOURS) AS year,
+    MONTH(A.RecordDate2 + INTERVAL 2 HOURS) AS month,
+    DAY(A.RecordDate2 + INTERVAL 2 HOURS) AS day,
+    
+    DATE_FORMAT(A.RecordDate2 + INTERVAL 2 HOURS, 'MMMM') AS month_name,
+    DATE_FORMAT(A.RecordDate2 + INTERVAL 2 HOURS, 'EEEE') AS day_name,
+    
+    HOUR(A.RecordDate2 + INTERVAL 2 HOURS) AS hour
+FROM workspace.default.viewership AS A
+LEFT JOIN workspace.default.user_profiles AS B
+ON A.UserID0 = B.UserID;
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+
+--- Total Consumption
+SELECT
+    COUNT(*) AS total_sessions
+FROM workspace.default.brighttv_clean;
+
+--- Consumption by Day
+SELECT
+    day_name,
+    COUNT(*) AS total_views
+FROM workspace.default.brighttv_clean
+GROUP BY day_name
+ORDER BY total_views DESC;
+
+--- Consumption by Hour
+SELECT
+    hour,
+    COUNT(*) AS total_views
+FROM workspace.default.brighttv_clean
+GROUP BY hour
+ORDER BY hour;
+
+--- Most Watched Channels
+SELECT
+    Channel,
+    COUNT(*) AS total_views
+FROM workspace.default.brighttv_clean
+GROUP BY Channel
+ORDER BY total_views DESC;
+
+--- Consumption by Province
+SELECT
+    Province,
+    COUNT(*) AS total_views
+FROM workspace.default.brighttv_clean
+GROUP BY Province
+ORDER BY total_views DESC;
+
+--- Consumption by Gender
+SELECT
+    Gender,
+    COUNT(*) AS total_views
+FROM workspace.default.brighttv_clean
+GROUP BY Gender;
+
+--- Consumption by Age
+SELECT
+    Age,
+    COUNT(*) AS total_views
+FROM workspace.default.brighttv_clean
+GROUP BY Age
+ORDER BY Age;
+
+--- Low Consumption Days
+SELECT
+    day_name,
+    COUNT(*) AS total_views
+FROM workspace.default.brighttv_clean
+GROUP BY day_name
+ORDER BY total_views ASC;
+
+SELECT *
+FROM workspace.default.brighttv_clean;
