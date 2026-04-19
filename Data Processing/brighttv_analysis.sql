@@ -14,7 +14,7 @@ LEFT JOIN workspace.default.user_profiles AS B
 ON A.UserID0 = B.UserID
 LIMIT 10;
 
---- Data Cleaning
+--- Data Cleaning And Transformation--------------------------------------------------
 --------------------------------------------------------------------------------------
 CREATE OR REPLACE TABLE workspace.default.brighttv_clean AS
 SELECT
@@ -31,10 +31,33 @@ SELECT
     B.Name,
     B.Surname,
     B.Email,
-    B.Gender,
-    B.Race,
+
+    CASE 
+        WHEN B.Gender IS NULL OR B.Gender = 'None' THEN 'Other'
+        ELSE B.Gender
+    END AS Gender,
+
+    CASE 
+        WHEN B.Race IS NULL OR B.Race = 'None' OR B.Race = ' ' THEN 'other'
+        ELSE B.Race
+    END AS Race,
+
     B.Age,
-    B.Province,
+
+     CASE
+        WHEN B.Age <= 12 THEN 'Kids'
+        WHEN B.Age BETWEEN 13 AND 19 THEN 'Teenagers'
+        WHEN B.Age BETWEEN 20 AND 34 THEN 'Youth'
+        WHEN B.Age BETWEEN 35 AND 54 THEN 'Adults'
+        WHEN B.Age >= 55 THEN 'Pensioners'
+    END AS Age_Group,
+
+    CASE 
+        WHEN B.Province IS NULL OR B.Province = 'None' THEN 'Other'
+        ELSE B.Province
+    END AS Province,
+
+    B.`Social Media Handle` AS Social_Media_Handle,
     
     YEAR(A.RecordDate2 + INTERVAL 2 HOURS) AS year,
     MONTH(A.RecordDate2 + INTERVAL 2 HOURS) AS month,
@@ -53,6 +76,15 @@ ON A.UserID0 = B.UserID;
 --- Total Consumption
 SELECT
     COUNT(*) AS total_sessions
+FROM workspace.default.brighttv_clean;
+
+--- Total Distinct Users
+SELECT COUNT(DISTINCT UserID) AS total_users
+FROM workspace.default.brighttv_clean;
+
+--- Total Viewing Minutes
+SELECT 
+    SUM(Duration_Minutes) AS total_viewing_minutes
 FROM workspace.default.brighttv_clean;
 
 --- Consumption by Day
@@ -95,12 +127,17 @@ FROM workspace.default.brighttv_clean
 GROUP BY Gender;
 
 --- Consumption by Age
-SELECT
-    Age,
-    COUNT(*) AS total_views
+SELECT Age_Group, 
+        COUNT(*) AS views
 FROM workspace.default.brighttv_clean
-GROUP BY Age
-ORDER BY Age;
+GROUP BY Age_Group
+ORDER BY Age_Group;
+
+---Total Viewing Minutes by Race
+SELECT Race, COUNT(*) AS total_views
+FROM workspace.default.brighttv_clean
+GROUP BY Race
+ORDER BY total_views DESC;
 
 --- Low Consumption Days
 SELECT
